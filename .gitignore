@@ -11,3 +11,9 @@
 *.lai
 *.la
 *.a
+
+tmp
+
+examples/case*/*.crd
+examples/case*/*.ebc
+
