@@ -1,4 +1,4 @@
-#include "Reader.h"
+#include "EBCReader.h"
 
 #include <osg/LightModel>
 #include <osgGA/StateSetManipulator>
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 	for(int i = 2; i < args.argc(); i++) ebcFiles.push_back(args[i]);
 
 	// Create a Reader object and a Viewer; begin constructing our scene.
-	osgtt::Reader reader;
+	osgtt::EBCReader reader;
 
 	if(!reader.setCRDFile(args[1])) {
 		OSG_FATAL << "Couldn't load CRD file '" << args[1] << "'; fatal." << std::endl;
@@ -50,12 +50,12 @@ int main(int argc, char** argv) {
 	
 	// Iterate over all the EBC files and add them to our group.
 	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
-		osgtt::TransparentModel* model = reader.modelFromEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
+		osgtt::EBCNode* node = reader.readEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
 
-		model->setAlpha(0.5);
-		model->setRGB(osg::Vec3(0.3, 0.6, 0.8));
+		node->setAlpha(0.5);
+		node->setRGB(osg::Vec3(0.3, 0.6, 0.8));
 
-		group->addChild(model);
+		group->addChild(node);
 	}
 
 	// Set a two-sided FFP LightModel.

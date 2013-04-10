@@ -13,14 +13,14 @@ SET(OPENSCENEGRAPH_INCLUDE_DIR "" CACHE PATH "Location of the OSG include header
 SET(OPENSCENEGRAPH_LIB_DIR "" CACHE PATH "Location of the the OSG library objects.")
 
 SET(SRC_FILES
-	"src/Main.cpp"
-	"src/Reader.cpp"
-	"src/TransparentModel.cpp"
+	"src/EBCNode.cpp"
+	"src/EBCReader.cpp"
+	"src/TransDemo.cpp"
 )
 
 SET(HEADER_FILES
-	"src/Reader.h"
-	"src/TransparentModel.h"
+	"src/EBCNode.h"
+	"src/EBCReader.h"
 )
 
 SOURCE_GROUP("Header Files" FILES ${HEADER_FILES})
