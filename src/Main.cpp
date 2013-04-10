@@ -1,98 +1,79 @@
-#include <osgDB/ReadFile>
-#include <osgGA/GUIEventHandler>
-#include <iostream>
-#include <osgViewer/Viewer>
-#include "MyGroup.h"
+#include "Reader.h"
+
 #include <osg/LightModel>
+#include <osgGA/StateSetManipulator>
+#include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
-using namespace osg;
 
+typedef std::vector<std::string> EBCFiles;
 
- /*===========================================================================
- *
- * "readVertices": Reads in the crd file and puts it into a Vec3 array. 
- *
- *===========================================================================
- */
-osg::ref_ptr<osg::Vec3Array> readVertices( char* crdFile )
-{
-    int     i;
-    FILE*   fp;
-    char    buff[1024];
-    char*   ptr;
-    double  x,y,z;
+#define HELP_ARGS(args) args.getApplicationUsage()->write( \
+	osg::notify(osg::NOTICE), \
+	osg::ApplicationUsage::COMMAND_LINE_OPTION \
+)
 
-    osg::ref_ptr<osg::Vec3Array> vertices= new osg::Vec3Array;
-    fp  = fopen( crdFile, "r" );
-    while( (ptr = fgets( buff, 1024, fp ) ) != NULL ) {
-        sscanf( buff, "%d %le %le %le", &i,&x,&y,&z );
-        vertices->push_back( osg::Vec3( x,y,z ) );
-    }
-    fclose( fp );
-    return vertices.get();
+int main(int argc, char** argv) {
+	osg::ArgumentParser args(&argc, argv);
+
+	args.getApplicationUsage()->setCommandLineUsage(args.getApplicationName() + " <CRD> <EBC Files...>");
+
+	while(args.read("--help")) {
+		HELP_ARGS(args);
+
+		return 0;
+	}
+
+	if(args.argc() < 3) {
+		HELP_ARGS(args);
+
+		return 1;
+	}
+
+	// Get a list of one or more of the requested EBC files.
+	EBCFiles ebcFiles;
+
+	ebcFiles.push_back(args[2]);
+
+	for(int i = 2; i < args.argc(); i++) ebcFiles.push_back(args[i]);
+
+	// Create a Reader object and a Viewer; begin constructing our scene.
+	osgtt::Reader reader;
+
+	if(!reader.setCRDFile(args[1])) {
+		OSG_FATAL << "Couldn't load CRD file '" << args[1] << "'; fatal." << std::endl;
+
+		return 2;
+	}
+
+	osgViewer::Viewer viewer;
+	osg::Group*       group = new osg::Group();
+	
+	// Iterate over all the EBC files and add them to our group.
+	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
+		osgtt::TransparentModel* model = reader.modelFromEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
+
+		model->setAlpha(0.5);
+		model->setRGB(osg::Vec3(0.3, 0.6, 0.8));
+
+		group->addChild(model);
+	}
+
+	// Set a two-sided FFP LightModel.
+	osg::StateSet*   stateSet   = group->getOrCreateStateSet();
+	osg::LightModel* lightModel = new osg::LightModel();
+
+	lightModel->setTwoSided(true);
+
+	stateSet->setAttribute(lightModel);
+
+	viewer.addEventHandler(new osgViewer::StatsHandler());
+	viewer.addEventHandler(new osgGA::StateSetManipulator(stateSet));
+	viewer.setSceneData(group);
+
+	return viewer.run();
 }
 
- /*===========================================================================
- *
- * "main": Main function which runs the program.
- *
- *===========================================================================
- */
-int main( int argc, char **argv )
-{
-    if(  argc != 3 ) {
-        fprintf( stderr, "Usage: %s crdFile ebcFile1,ebcFile2..\n", argv[0]);
-        return -1;
-    }
-
-    char*   crdFile	= NULL;
-    char*   ebcList = NULL;
-    char*   szp = NULL;
-    char*   szq = NULL;
-    char*   str = NULL;
-    int     nEbcs;
-    int     i;
-    char**  ebcFiles;
-
-    /* reads .crd and .ebc*/
-    crdFile	= (char*) malloc ( sizeof(char)*(1+strlen(argv[1])));
-    strcpy( crdFile, argv[1] );
-    printf("crdFile = <%s>\n", crdFile );
-
-    ebcList = (char*) malloc ( sizeof(char)*(1+strlen(argv[2]) ) );
-    strcpy( ebcList, argv[2] );
-    nEbcs   = 1;
-    szq = ebcList;
-    szp = strchr( szq,',' );
-    if( szp == NULL ) {
-        nEbcs	= 1;
-    } else {
-        while( szp != NULL ) {
-            szq	= szp + 1;
-            if( szq != NULL ) { nEbcs++; }
-            *szp = '\0';
-            szp = strchr( szq, ',' );
-        }
-    }
-    printf("nEbcs = %d\n", nEbcs );
-    szp = NULL;
-    szq = NULL;
-    free( ebcList );
-
-    ebcList = (char*) malloc ( sizeof(char)*(1+strlen(argv[2]) ) );
-    strcpy( ebcList, argv[2] );
-    ebcFiles    = (char**) malloc( sizeof(char*)*nEbcs );
-    szq = ebcList;
-    for( i=0; i<nEbcs; i++ ) {
-        szp	= strchr( szq,',' );
-        if( szp != NULL ) { *szp = '\0'; }
-        ebcFiles[i]	= (char*) malloc (sizeof(char)*(1+strlen(szq)));
-        strcpy( ebcFiles[i], szq );
-        szq = szp + 1;
-    }
-    free( ebcList );
-    ebcList = NULL;
-    for( i=0;i<nEbcs;i++) { printf("ebcFile = %s\n",ebcFiles[i]); }
+#if 0
     osg::ref_ptr<osg::Vec3Array> vertices	= readVertices( crdFile );
     /* end of reading .crd and .ebc*/
 
@@ -107,11 +88,12 @@ int main( int argc, char **argv )
     // We are setting color randomly.
     // build the scene data
     for( i=0; i<nEbcs; i++ )  {
-        osg::ref_ptr<MyGroup> myGroup = new MyGroup( vertices.get(),3, ebcFiles[i],2 );
-        myGroup->setColor(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX));
+        osg::ref_ptr<MyGroup> myGroup = new MyGroup( vertices.get(),3, ebcFiles[i],1);
+        // myGroup->setColor(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX));
+        myGroup->setColor(C[i][0], C[i][1], C[i][2]);
 	// setting transparency
         myGroup->setTransparency(0.5);
-        myGroup->setDisplay(1);
+        //myGroup->setDisplay(2);
         root->addChild(myGroup);
     }
 
@@ -120,5 +102,5 @@ int main( int argc, char **argv )
     viewer->run();
     free(crdFile);
     free(ebcFiles);
-    return 0;
-}
+#endif
+
