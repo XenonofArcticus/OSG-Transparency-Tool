@@ -35,16 +35,9 @@ EBCNode::EBCNode(osg::Vec3Array* vertices, osg::DrawElementsUInt* elements, osg:
 
 	geometry->setNormalArray(normals);
 	geometry->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geometry->dirtyBound();
 
 	addDrawable(geometry);
-
-	/*
-	getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-	getOrCreateStateSet()->setAttributeAndModes(
-		new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA),
-		osg::StateAttribute::ON
-	);
-	*/
 }
 
 void EBCNode::setRGB(const osg::Vec3& rgb) {

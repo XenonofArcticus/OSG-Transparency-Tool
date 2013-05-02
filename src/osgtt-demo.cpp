@@ -1,7 +1,10 @@
 #include "EBCReader.h"
+#include "TransparencyGroup.h"
+#include "DepthPeeling.h"
 
 #include <osg/LightModel>
 #include <osgGA/StateSetManipulator>
+#include <osgDB/WriteFile>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
@@ -11,6 +14,63 @@ typedef std::vector<std::string> EBCFiles;
 	osg::notify(osg::NOTICE), \
 	osg::ApplicationUsage::COMMAND_LINE_OPTION \
 )
+
+class EventHandler: public osgGA::GUIEventHandler {
+public:
+	EventHandler(osgtt::TransparencyGroup* group):
+	_group(group) {
+	}
+
+	virtual bool handle(
+		const osgGA::GUIEventAdapter& gea,
+		osgGA::GUIActionAdapter&      gaa,
+		osg::Object*                  obj,
+		osg::NodeVisitor*             nv
+	) {
+		if(!_group) return false;
+
+		osgtt::DepthPeeling* dp = _group->getDepthPeeling();
+
+		if(!dp) return false;
+
+		// TODO: This is a hack until Linux generates a single resize event on Viewer creation.
+		if(gea.getEventType() == osgGA::GUIEventAdapter::RESIZE) {
+			unsigned int ww = gea.getWindowWidth();
+			unsigned int wh = gea.getWindowHeight();
+	
+			// OSG_WARN << "RESIZE " << ww << ", " << wh << std::endl;
+
+			dp->resize(ww, wh);
+
+			return true;
+		}
+
+		if(gea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
+			int key = gea.getKey();
+
+			if(key == 'q') dp->setNumPasses(dp->getNumPasses() + 1);
+
+			else if(key == 'w') dp->setNumPasses(dp->getNumPasses() - 1);
+
+			else if(key == 'a') dp->setOffsetValue(dp->getOffsetValue() + 1);
+
+			else if(key == 's') dp->setOffsetValue(dp->getOffsetValue() - 1);
+			
+			else if(key == 'z') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_SORTED_BIN);
+			
+			else if(key == 'x') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
+
+			else return false;
+
+			return true;
+		}
+
+		return false;
+	}
+
+protected:
+	osg::ref_ptr<osgtt::TransparencyGroup> _group;
+};
 
 int main(int argc, char** argv) {
 	osg::ArgumentParser args(&argc, argv);
@@ -45,8 +105,7 @@ int main(int argc, char** argv) {
 		return 2;
 	}
 
-	osgViewer::Viewer viewer;
-	osg::Group*       group = new osg::Group();
+	osgtt::TransparencyGroup* group = new osgtt::TransparencyGroup();
 	
 	// Iterate over all the EBC files and add them to our group.
 	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
@@ -66,41 +125,19 @@ int main(int argc, char** argv) {
 
 	stateSet->setAttribute(lightModel);
 
+	osgViewer::Viewer viewer;
+
+	group->setDepthPeeling(new osgtt::DepthPeeling(512, 512));
+	group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
+	group->setName("TransparencyGroup");
+
+	// viewer.addEventHandler(new osgViewer::WindowSizeHandler());
 	viewer.addEventHandler(new osgViewer::StatsHandler());
 	viewer.addEventHandler(new osgGA::StateSetManipulator(stateSet));
+	viewer.addEventHandler(new EventHandler(group));
 	viewer.setSceneData(group);
+	viewer.setUpViewInWindow(50, 50, 512, 512);
 
 	return viewer.run();
 }
-
-#if 0
-    osg::ref_ptr<osg::Vec3Array> vertices	= readVertices( crdFile );
-    /* end of reading .crd and .ebc*/
-
-    osg::ref_ptr<osgViewer::Viewer> viewer= new osgViewer::Viewer;
-
-    osg::ref_ptr<osg::Group> root= new Group();
-    osg::ref_ptr<osg::StateSet> st = root->getOrCreateStateSet();
-    osg::ref_ptr< osg::LightModel> pLightModel = new osg::LightModel();
-    pLightModel->setTwoSided( true );
-    st->setAttribute(pLightModel.get());
-
-    // We are setting color randomly.
-    // build the scene data
-    for( i=0; i<nEbcs; i++ )  {
-        osg::ref_ptr<MyGroup> myGroup = new MyGroup( vertices.get(),3, ebcFiles[i],1);
-        // myGroup->setColor(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX));
-        myGroup->setColor(C[i][0], C[i][1], C[i][2]);
-	// setting transparency
-        myGroup->setTransparency(0.5);
-        //myGroup->setDisplay(2);
-        root->addChild(myGroup);
-    }
-
-    viewer->addEventHandler( new osgViewer::StatsHandler() );
-    viewer->setSceneData( root.get() );
-    viewer->run();
-    free(crdFile);
-    free(ebcFiles);
-#endif
 

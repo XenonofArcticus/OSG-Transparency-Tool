@@ -1,6 +1,7 @@
 #include "EBCReader.h"
 
 #include <cstdio>
+#include <sstream>
 
 namespace osgtt {
 
@@ -56,7 +57,16 @@ EBCNode* EBCReader::readEBCFile(const std::string& ebc, osg::PrimitiveSet::Mode 
 
 	std::fclose(fp);
 
-	return new EBCNode(_vertices.get(), elements, mode);
+	EBCNode* ebcNode = new EBCNode(_vertices, elements, mode);
+
+	std::ostringstream geometryName;
+
+	geometryName << ebc << " (Geometry)";
+
+	ebcNode->setName(ebc);
+	ebcNode->getDrawable(0)->setName(geometryName.str());
+
+	return ebcNode;
 }
 
 }

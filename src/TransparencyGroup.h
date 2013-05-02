@@ -26,6 +26,8 @@ public:
 
 	void setTransparencyMode(TransparencyMode mode);
 
+	void setDepthPeeling(DepthPeeling* depthPeeling);
+
 	DepthPeeling* getDepthPeeling() {
 		return _depthPeeling;
 	}

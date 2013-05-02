@@ -1,4 +1,4 @@
-PROJECT(TransDemo)
+PROJECT(osgTT)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
@@ -13,34 +13,47 @@ SET(OPENSCENEGRAPH_INCLUDE_DIR "" CACHE PATH "Location of the OSG include header
 SET(OPENSCENEGRAPH_LIB_DIR "" CACHE PATH "Location of the the OSG library objects.")
 
 SET(SRC_FILES
-	"src/EBCNode.cpp"
-	"src/EBCReader.cpp"
-	"src/TransDemo.cpp"
+	src/DepthPeeling.cpp
+	src/EBCNode.cpp
+	src/EBCReader.cpp
+	src/TransparencyGroup.cpp
 )
 
 SET(HEADER_FILES
-	"src/EBCNode.h"
-	"src/EBCReader.h"
+	src/DepthPeeling.h
+	src/EBCNode.h
+	src/EBCReader.h
+	src/TransparencyGroup.h
 )
 
 SOURCE_GROUP("Header Files" FILES ${HEADER_FILES})
 SOURCE_GROUP("Source Files" FILES ${SRC_FILES})
 
-INCLUDE_DIRECTORIES("${OPENSCENEGRAPH_INCLUDE_DIR}")
+INCLUDE_DIRECTORIES(
+	${OPENSCENEGRAPH_INCLUDE_DIR}
+	src
+)
+
 LINK_DIRECTORIES(${OPENSCENEGRAPH_LIB_DIR})
 
-SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/examples")
+ADD_LIBRARY(osgtt STATIC ${HEADER_FILES} ${SRC_FILES})
 
-ADD_EXECUTABLE(TransDemo ${HEADER_FILES} ${SRC_FILES})
-
-TARGET_LINK_LIBRARIES(TransDemo
+TARGET_LINK_LIBRARIES(osgtt
 	debug     OpenThreads${CMAKE_DEBUG_POSTFIX}
 	optimized OpenThreads
 	debug     osg${CMAKE_DEBUG_POSTFIX}
 	optimized osg
 	debug     osgGA${CMAKE_DEBUG_POSTFIX}
 	optimized osgGA
+	debug     osgUtil${CMAKE_DEBUG_POSTFIX}
+	optimized osgUtil
 	debug     osgViewer${CMAKE_DEBUG_POSTFIX}
 	optimized osgViewer
 )
+
+ADD_EXECUTABLE(osgtt-demo src/osgtt-demo.cpp)
+
+TARGET_LINK_LIBRARIES(osgtt-demo osgtt osgDB)
+
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/demo)
 

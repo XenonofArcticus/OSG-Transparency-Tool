@@ -14,6 +14,7 @@
 
 tmp
 
-examples/case*/*.crd
-examples/case*/*.ebc
+demo/osgtt-demo
+demo/case*/*.crd
+demo/case*/*.ebc
 

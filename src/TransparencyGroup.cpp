@@ -6,7 +6,7 @@ namespace osgtt {
 
 TransparencyGroup::TransparencyGroup() {
 	_scene        = new osg::Group();
-	_depthPeeling = new DepthPeeling(512, 512);
+	_depthPeeling = new DepthPeeling();
 
 	setTransparencyMode(DEPTH_SORTED_BIN);
 }
@@ -59,12 +59,18 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 	else if(mode == DEPTH_PEELING) {
 		_depthPeeling->setScene(_scene);
-		_depthPeeling->createPeeling();
+		_depthPeeling->dirty();
 
 		_children.push_back(_depthPeeling->getRoot());
 	}
 
 	_mode = mode;
+}
+
+void TransparencyGroup::setDepthPeeling(DepthPeeling* depthPeeling) {
+	_depthPeeling = depthPeeling;
+
+	if(_mode == DEPTH_PEELING) setTransparencyMode(DEPTH_PEELING);
 }
 
 }

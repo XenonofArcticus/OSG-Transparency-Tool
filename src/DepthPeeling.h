@@ -1,6 +1,7 @@
 #pragma once
 
-#include <osgGA/GUIEventHandler>
+#include <osg/Group>
+#include <osg/Texture>
 
 namespace osgtt {
 
@@ -36,40 +37,23 @@ public:
 		TextureMode  _textureMode;
 	};
 
-	class EventHandler: public osgGA::GUIEventHandler {
-	public:
-		EventHandler(DepthPeeling* depthPeeling);
-
-		virtual bool handle(
-			const osgGA::GUIEventAdapter& gea,
-			osgGA::GUIActionAdapter&      gaa,
-			osg::Object*                  obj,
-			osg::NodeVisitor*             nv
-		);
-
-		osg::observer_ptr<DepthPeeling> _depthPeeling;
-	};
-
 	DepthPeeling(unsigned int width = 0, unsigned int height = 0);
 
-	osg::Node*    createQuad(unsigned int layerNumber);
-	void          createPeeling();
-	EventHandler* createEventHandler();
-
 	void resize(int width, int height);
+	void dirty();
 
 	void setScene(osg::Node* scene) {
 		_scene = scene;
 	}
 
 	osg::Node* getRoot() {
-		return _root.get();
+		return _root;
 	}
 
 	void setNumPasses(unsigned int numPasses) {
 		_numPasses = numPasses;
 		
-		createPeeling();
+		dirty();
 	}
 
 	unsigned int getNumPasses() const {
@@ -79,19 +63,28 @@ public:
 	void setTexUnit(unsigned int texUnit) {
 		_texUnit = texUnit;
 
-		createPeeling();
+		dirty();
 	}
 
 	void setOffsetValue(unsigned int offsetValue) {
 		_offsetValue = offsetValue;
 
-		createPeeling();
+		dirty();
 	}
 
 	unsigned int getOffsetValue() const {
 		return _offsetValue;
 	}
 
+	unsigned int getTexWidth() const {
+		return _texWidth;
+	}
+
+	unsigned int getTexHeight() const {
+		return _texHeight;
+	}
+
+protected:
 	TextureMode  _textureMode;
 	DepthMode    _depthMode;
 	unsigned int _numPasses;

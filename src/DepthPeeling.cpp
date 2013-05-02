@@ -41,6 +41,32 @@ void __setTextureSize(osg::Texture* texture, int width, int height) {
 	}
 }
 
+osg::Node* __createQuad(unsigned int layerNumber) {
+	std::ostringstream name;
+
+	name << "Layer" << layerNumber;
+
+	osg::Geometry* geometry = osg::createTexturedQuadGeometry(
+		osg::Vec3(),
+		osg::Vec3(1.0, 0.0, 0.0),
+		osg::Vec3(0.0, 1.0, 0.0),
+		0.0, 0.0,
+		1.0, 1.0
+	);
+
+	osg::Geode* geode = new osg::Geode();
+
+	geode->addDrawable(geometry);
+	geode->setName(name.str());
+
+	name << " (Geometry)";
+
+	geometry->setName(name.str());
+
+	return geode;
+}
+
+
 DepthPeeling::CullCallback::CullCallback(
 	unsigned int texUnit,
 	unsigned int texWidth, 
@@ -71,6 +97,8 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 	if(_textureMode == TEXTURE_STANDARD) {
 		vpw /= static_cast<double>(_texWidth);
 		vph /= static_cast<double>(_texHeight);
+
+		// OSG_WARN << "scaling by: " << vpw << ", " << vph << std::endl;
 	}
 
 	// Scale the viewport to the texture width and height.
@@ -92,43 +120,8 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 	cullVisitor->popStateSet();
 }
 
-DepthPeeling::EventHandler::EventHandler(DepthPeeling* depthPeeling):
-_depthPeeling(depthPeeling) {
-}
-
-bool DepthPeeling::EventHandler::handle(
-	const osgGA::GUIEventAdapter& gea,
-	osgGA::GUIActionAdapter&      gaa,
-	osg::Object*                  obj,
-	osg::NodeVisitor*             nv
-) {
-	if(!_depthPeeling) return false;
-
-	if(gea.getEventType() == osgGA::GUIEventAdapter::RESIZE) {
-		_depthPeeling->resize(gea.getWindowWidth(), gea.getWindowHeight());
-
-		return true;
-	}
-
-	if(gea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
-		if(gea.getKey() == 'm') _depthPeeling->setNumPasses(_depthPeeling->getNumPasses() + 1);
-
-		else if(gea.getKey() == 'n') _depthPeeling->setNumPasses(_depthPeeling->getNumPasses() - 1);
-
-		else if(gea.getKey() == 'p') _depthPeeling->setOffsetValue(_depthPeeling->getOffsetValue() + 1);
-
-		else if(gea.getKey() == 'o') _depthPeeling->setOffsetValue(_depthPeeling->getOffsetValue() - 1);
-
-		else return false;
-
-		return true;
-	}
-
-	return false;
-}
-
 DepthPeeling::DepthPeeling(unsigned int width, unsigned int height):
-_textureMode (TEXTURE_RECTANGLE),
+_textureMode (TEXTURE_STANDARD),
 _depthMode   (DEPTH_STANDARD),
 _numPasses   (3),
 _texUnit     (1),
@@ -137,35 +130,34 @@ _texHeight   (height),
 _offsetValue (8) {
 	_root = new osg::Group();
 
-	createPeeling();
+	dirty();
 }
 
-osg::Node* DepthPeeling::createQuad(unsigned int layerNumber) {
-	std::ostringstream name;
+void DepthPeeling::resize(int width, int height) {
+	return;
 
-	name << "Layer" << layerNumber;
+	if(_textureMode == TEXTURE_STANDARD) {
+		width  = osg::Image::computeNearestPowerOfTwo(width);
+		height = osg::Image::computeNearestPowerOfTwo(height);
+	}
 
-	osg::Geometry* geometry = osg::createTexturedQuadGeometry(
-		osg::Vec3(),
-		osg::Vec3(1.0, 0.0, 0.0),
-		osg::Vec3(0.0, 1.0, 0.0),
-		0.0, 0.0,
-		1.0, 1.0
-	);
+	if(
+		static_cast<int>(_texWidth) == width &&
+		static_cast<int>(_texHeight) == height
+	) return;
 
-	osg::Geode* geode = new osg::Geode();
+	__setTextureSize(_depthTextures[0], width, height);
+	__setTextureSize(_depthTextures[1], width, height);
 
-	geode->addDrawable(geometry);
-	geode->setName(name.str());
+	for(unsigned int i = 0; i < _colorTextures.size(); i++) __setTextureSize(_colorTextures[i], width, height);
 
-	name << " (Geometry)";
+	_texWidth  = width;
+	_texHeight = height;
 
-	geometry->setName(name.str());
-
-	return geode;
+	dirty();
 }
 
-void DepthPeeling::createPeeling() {
+void DepthPeeling::dirty() {
 	if(!_texWidth || !_texHeight || !_scene) return;
 
 	_root->removeChildren(0, _root->getNumChildren());
@@ -183,7 +175,7 @@ void DepthPeeling::createPeeling() {
 	_compositeCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	_compositeCamera->setViewMatrix(osg::Matrix());
 	_compositeCamera->setProjectionMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
-	_compositeCamera->setCullCallback(new CullCallback(0, _texWidth, _texHeight, 0, _textureMode));
+	// _compositeCamera->setCullCallback(new CullCallback(0, _texWidth, _texHeight, 0, _textureMode));
 	_compositeCamera->setComputeNearFarMode(osg::Camera::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
 
 	osg::StateSet* stateSet = _compositeCamera->getOrCreateStateSet();
@@ -291,7 +283,7 @@ void DepthPeeling::createPeeling() {
 
 		_root->addChild(camera);
 
-		osg::Node* geode = createQuad(i);
+		osg::Node* geode = __createQuad(i);
 
 		osg::StateSet* stateSet = geode->getOrCreateStateSet();
 		
@@ -303,32 +295,6 @@ void DepthPeeling::createPeeling() {
 		
 		_compositeCamera->insertChild(0, geode);
 	}
-}
-
-DepthPeeling::EventHandler* DepthPeeling::createEventHandler() {
-	return new EventHandler(this);
-}
-
-void DepthPeeling::resize(int width, int height) {
-	if(_textureMode == TEXTURE_STANDARD) {
-		width  = osg::Image::computeNearestPowerOfTwo(width);
-		height = osg::Image::computeNearestPowerOfTwo(height);
-	}
-
-	if(
-		static_cast<int>(_texWidth) == width &&
-		static_cast<int>(_texHeight) == height
-	) return;
-
-	__setTextureSize(_depthTextures[0], width, height);
-	__setTextureSize(_depthTextures[1], width, height);
-
-	for(unsigned int i = 0; i < _colorTextures.size(); i++) __setTextureSize(_colorTextures[i], width, height);
-
-	_texWidth  = width;
-	_texHeight = height;
-
-	createPeeling();
 }
 
 }
