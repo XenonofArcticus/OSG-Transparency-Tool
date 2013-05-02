@@ -49,13 +49,11 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 	// In this mode, we'll just add our proxied scene object and use OSG's default
 	// transparency/alpha/blending/whatever.
 	if(mode == DEPTH_SORTED_BIN) {
-		/*
 		getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 		getOrCreateStateSet()->setAttributeAndModes(
 			new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA),
 			osg::StateAttribute::ON
 		);
-		*/
 
 		Group::addChild(_scene);
 	}
