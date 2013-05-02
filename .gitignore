@@ -15,6 +15,8 @@
 tmp
 
 demo/osgtt-demo
+demo/osgtt-shape
 demo/case*/*.crd
 demo/case*/*.ebc
+demo/scene.*
 

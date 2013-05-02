@@ -97,8 +97,6 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 	if(_textureMode == TEXTURE_STANDARD) {
 		vpw /= static_cast<double>(_texWidth);
 		vph /= static_cast<double>(_texHeight);
-
-		// OSG_WARN << "scaling by: " << vpw << ", " << vph << std::endl;
 	}
 
 	// Scale the viewport to the texture width and height.
@@ -123,7 +121,7 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 DepthPeeling::DepthPeeling(unsigned int width, unsigned int height):
 _textureMode (TEXTURE_STANDARD),
 _depthMode   (DEPTH_STANDARD),
-_numPasses   (3),
+_numPasses   (2),
 _texUnit     (1),
 _texWidth    (width),
 _texHeight   (height),
@@ -175,7 +173,7 @@ void DepthPeeling::dirty() {
 	_compositeCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	_compositeCamera->setViewMatrix(osg::Matrix());
 	_compositeCamera->setProjectionMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
-	// _compositeCamera->setCullCallback(new CullCallback(0, _texWidth, _texHeight, 0, _textureMode));
+	_compositeCamera->setCullCallback(new CullCallback(0, _texWidth, _texHeight, 0, _textureMode));
 	_compositeCamera->setComputeNearFarMode(osg::Camera::COMPUTE_NEAR_FAR_USING_PRIMITIVES);
 
 	osg::StateSet* stateSet = _compositeCamera->getOrCreateStateSet();
@@ -183,7 +181,7 @@ void DepthPeeling::dirty() {
 	stateSet->setBinName("TraversalOrderBin");
 	stateSet->setRenderBinMode(osg::StateSet::USE_RENDERBIN_DETAILS);
 
-	_root->addChild(_compositeCamera.get());
+	_root->addChild(_compositeCamera);
 
 	for (unsigned int i = 0; i < 2; i++) {
 		if(_textureMode == TEXTURE_STANDARD) _depthTextures[i] = __createTexture<osg::Texture2D>(_texWidth, _texHeight);
@@ -208,7 +206,7 @@ void DepthPeeling::dirty() {
 		}
 
 		_depthTextures[i]->setShadowComparison(true);
-		_depthTextures[i]->setShadowAmbient(0); // The r value if the test fails
+		_depthTextures[i]->setShadowAmbient(0);
 		_depthTextures[i]->setShadowCompareFunc(osg::Texture::GREATER);
 		_depthTextures[i]->setShadowTextureMode(osg::Texture::INTENSITY);
 	}
@@ -253,7 +251,7 @@ void DepthPeeling::dirty() {
 
 		camera->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 
-		if(!i) camera->addChild(_scene.get());
+		if(!i) camera->addChild(_scene);
 
 		else {
 			osg::StateSet* stateSet = camera->getOrCreateStateSet();
@@ -278,7 +276,7 @@ void DepthPeeling::dirty() {
 			camera->addChild(texGenNode);
 			camera->addCullCallback(new CullCallback(_texUnit, _texWidth, _texHeight, _offsetValue, _textureMode));
 
-			texGenNode->addChild(_scene.get());
+			texGenNode->addChild(_scene);
 		}
 
 		_root->addChild(camera);

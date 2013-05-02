@@ -4,6 +4,7 @@
 
 #include <osg/LightModel>
 #include <osgGA/StateSetManipulator>
+#include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -132,9 +133,9 @@ int main(int argc, char** argv) {
 	group->setName("TransparencyGroup");
 
 	// viewer.addEventHandler(new osgViewer::WindowSizeHandler());
+	viewer.addEventHandler(new EventHandler(group));
 	viewer.addEventHandler(new osgViewer::StatsHandler());
 	viewer.addEventHandler(new osgGA::StateSetManipulator(stateSet));
-	viewer.addEventHandler(new EventHandler(group));
 	viewer.setSceneData(group);
 	viewer.setUpViewInWindow(50, 50, 512, 512);
 

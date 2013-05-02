@@ -93,9 +93,7 @@ protected:
 	unsigned int _texHeight;
 	unsigned int _offsetValue;
 
-	// A read-only, potentially invalid pointer to the scene to render.
-	osg::observer_ptr<osg::Node> _scene;
-
+	osg::ref_ptr<osg::Node>                  _scene;
 	osg::ref_ptr<osg::Group>                 _root;
 	osg::ref_ptr<osg::Camera>                _compositeCamera;
 	osg::ref_ptr<osg::Texture>               _depthTextures[2];
