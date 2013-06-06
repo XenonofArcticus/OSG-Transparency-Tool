@@ -45,6 +45,8 @@ TARGET_LINK_LIBRARIES(osgtt
 	optimized osg
 	debug     osgGA${CMAKE_DEBUG_POSTFIX}
 	optimized osgGA
+	debug     osgDB${CMAKE_DEBUG_POSTFIX}
+	optimized osgDB
 	debug     osgUtil${CMAKE_DEBUG_POSTFIX}
 	optimized osgUtil
 	debug     osgViewer${CMAKE_DEBUG_POSTFIX}

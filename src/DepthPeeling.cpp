@@ -15,7 +15,7 @@
 namespace osgtt {
 
 template<typename TextureType>
-osg::Texture* __createTexture(unsigned int width, unsigned int height) {
+osg::Texture* _createTexture(unsigned int width, unsigned int height) {
 	TextureType* texture = new TextureType();
 
 	texture->setTextureSize(width, height);
@@ -23,7 +23,7 @@ osg::Texture* __createTexture(unsigned int width, unsigned int height) {
 	return texture;
 }
 
-void __setTextureSize(osg::Texture* texture, int width, int height) {
+void _setTextureSize(osg::Texture* texture, int width, int height) {
 	osg::Texture2D* t2d = dynamic_cast<osg::Texture2D*>(texture);
 
 	if(t2d) {
@@ -41,7 +41,7 @@ void __setTextureSize(osg::Texture* texture, int width, int height) {
 	}
 }
 
-osg::Node* __createQuad(unsigned int layerNumber) {
+osg::Node* _createQuad(unsigned int layerNumber) {
 	std::ostringstream name;
 
 	name << "Layer" << layerNumber;
@@ -65,7 +65,6 @@ osg::Node* __createQuad(unsigned int layerNumber) {
 
 	return geode;
 }
-
 
 DepthPeeling::CullCallback::CullCallback(
 	unsigned int texUnit,
@@ -119,10 +118,10 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 }
 
 DepthPeeling::DepthPeeling(unsigned int width, unsigned int height):
-_textureMode (TEXTURE_STANDARD),
+_textureMode (TEXTURE_RECTANGLE),
 _depthMode   (DEPTH_STANDARD),
 _numPasses   (2),
-_texUnit     (1),
+_texUnit     (0),
 _texWidth    (width),
 _texHeight   (height),
 _offsetValue (8) {
@@ -144,10 +143,10 @@ void DepthPeeling::resize(int width, int height) {
 		static_cast<int>(_texHeight) == height
 	) return;
 
-	__setTextureSize(_depthTextures[0], width, height);
-	__setTextureSize(_depthTextures[1], width, height);
+	_setTextureSize(_depthTextures[0], width, height);
+	_setTextureSize(_depthTextures[1], width, height);
 
-	for(unsigned int i = 0; i < _colorTextures.size(); i++) __setTextureSize(_colorTextures[i], width, height);
+	for(unsigned int i = 0; i < _colorTextures.size(); i++) _setTextureSize(_colorTextures[i], width, height);
 
 	_texWidth  = width;
 	_texHeight = height;
@@ -184,9 +183,9 @@ void DepthPeeling::dirty() {
 	_root->addChild(_compositeCamera);
 
 	for (unsigned int i = 0; i < 2; i++) {
-		if(_textureMode == TEXTURE_STANDARD) _depthTextures[i] = __createTexture<osg::Texture2D>(_texWidth, _texHeight);
+		if(_textureMode == TEXTURE_STANDARD) _depthTextures[i] = _createTexture<osg::Texture2D>(_texWidth, _texHeight);
 		
-		else _depthTextures[i] = __createTexture<osg::TextureRectangle>(_texWidth, _texHeight);
+		else _depthTextures[i] = _createTexture<osg::TextureRectangle>(_texWidth, _texHeight);
 
 		_depthTextures[i]->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
 		_depthTextures[i]->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
@@ -236,9 +235,9 @@ void DepthPeeling::dirty() {
 
 		osg::Texture* colorTexture = 0;
 
-		if(_textureMode == TEXTURE_STANDARD) colorTexture = __createTexture<osg::Texture2D>(_texWidth, _texHeight);
+		if(_textureMode == TEXTURE_STANDARD) colorTexture = _createTexture<osg::Texture2D>(_texWidth, _texHeight);
 		
-		else colorTexture = __createTexture<osg::TextureRectangle>(_texWidth, _texHeight);
+		else colorTexture = _createTexture<osg::TextureRectangle>(_texWidth, _texHeight);
 
 		_colorTextures.push_back(colorTexture);
 
@@ -281,7 +280,7 @@ void DepthPeeling::dirty() {
 
 		_root->addChild(camera);
 
-		osg::Node* geode = __createQuad(i);
+		osg::Node* geode = _createQuad(i);
 
 		osg::StateSet* stateSet = geode->getOrCreateStateSet();
 		

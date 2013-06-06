@@ -132,12 +132,10 @@ int main(int argc, char** argv) {
 	group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 	group->setName("TransparencyGroup");
 
-	// viewer.addEventHandler(new osgViewer::WindowSizeHandler());
 	viewer.addEventHandler(new EventHandler(group));
-	viewer.addEventHandler(new osgViewer::StatsHandler());
-	viewer.addEventHandler(new osgGA::StateSetManipulator(stateSet));
 	viewer.setSceneData(group);
 	viewer.setUpViewInWindow(50, 50, 512, 512);
+	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 
 	return viewer.run();
 }
