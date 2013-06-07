@@ -62,7 +62,7 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 		_depthPeeling->setScene(_scene);
 		_depthPeeling->dirty();
 
-		Group::addChild(_depthPeeling->getRoot());
+		Group::addChild(_depthPeeling);
 	}
 
 	_mode = mode;

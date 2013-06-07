@@ -118,30 +118,28 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 }
 
 DepthPeeling::DepthPeeling(unsigned int width, unsigned int height):
-_textureMode (TEXTURE_RECTANGLE),
+_textureMode (TEXTURE_STANDARD),
 _depthMode   (DEPTH_STANDARD),
 _numPasses   (2),
 _texUnit     (0),
 _texWidth    (width),
 _texHeight   (height),
 _offsetValue (8) {
-	_root = new osg::Group();
-
 	dirty();
 }
 
 void DepthPeeling::resize(int width, int height) {
-	return;
-
 	if(_textureMode == TEXTURE_STANDARD) {
-		width  = osg::Image::computeNearestPowerOfTwo(width);
-		height = osg::Image::computeNearestPowerOfTwo(height);
+		width  = osg::Image::computeNearestPowerOfTwo(width, 1.0);
+		height = osg::Image::computeNearestPowerOfTwo(height, 1.0);
 	}
 
 	if(
 		static_cast<int>(_texWidth) == width &&
 		static_cast<int>(_texHeight) == height
 	) return;
+
+	OSG_WARN << width << " " << height << std::endl;
 
 	_setTextureSize(_depthTextures[0], width, height);
 	_setTextureSize(_depthTextures[1], width, height);
@@ -157,8 +155,8 @@ void DepthPeeling::resize(int width, int height) {
 void DepthPeeling::dirty() {
 	if(!_texWidth || !_texHeight || !_scene) return;
 
-	_root->removeChildren(0, _root->getNumChildren());
-	_root->setName("DepthPeelingRoot");
+	removeChildren(0, getNumChildren());
+	setName("DepthPeelingRoot");
 
 	_colorTextures.clear();
 
@@ -180,7 +178,7 @@ void DepthPeeling::dirty() {
 	stateSet->setBinName("TraversalOrderBin");
 	stateSet->setRenderBinMode(osg::StateSet::USE_RENDERBIN_DETAILS);
 
-	_root->addChild(_compositeCamera);
+	addChild(_compositeCamera);
 
 	for (unsigned int i = 0; i < 2; i++) {
 		if(_textureMode == TEXTURE_STANDARD) _depthTextures[i] = _createTexture<osg::Texture2D>(_texWidth, _texHeight);
@@ -278,7 +276,7 @@ void DepthPeeling::dirty() {
 			texGenNode->addChild(_scene);
 		}
 
-		_root->addChild(camera);
+		addChild(camera);
 
 		osg::Node* geode = _createQuad(i);
 

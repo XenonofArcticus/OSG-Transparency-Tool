@@ -27,8 +27,6 @@ public:
 			unsigned int ww = gea.getWindowWidth();
 			unsigned int wh = gea.getWindowHeight();
 	
-			// OSG_WARN << "RESIZE " << ww << ", " << wh << std::endl;
-
 			dp->resize(ww, wh);
 
 			return true;
