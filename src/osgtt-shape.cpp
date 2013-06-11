@@ -22,7 +22,6 @@ public:
 
 		if(!dp) return false;
 
-		// TODO: This is a hack until Linux generates a single resize event on Viewer creation.
 		if(gea.getEventType() == osgGA::GUIEventAdapter::RESIZE) {
 			unsigned int ww = gea.getWindowWidth();
 			unsigned int wh = gea.getWindowHeight();
