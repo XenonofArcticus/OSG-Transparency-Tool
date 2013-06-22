@@ -46,7 +46,7 @@ public:
 	void setDepthPeeling(DepthPeeling* depthPeeling);
 
 	DepthPeeling* getDepthPeeling() {
-		return _depthPeeling;
+		return _depthPeeling.get();
 	}
 
 protected:

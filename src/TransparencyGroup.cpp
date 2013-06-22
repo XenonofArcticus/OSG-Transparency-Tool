@@ -55,14 +55,14 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 			osg::StateAttribute::ON
 		);
 
-		Group::addChild(_scene);
+		Group::addChild(_scene.get());
 	}
 
 	else if(mode == DEPTH_PEELING) {
-		_depthPeeling->setScene(_scene);
+		_depthPeeling->setScene(_scene.get());
 		_depthPeeling->dirty();
 
-		Group::addChild(_depthPeeling);
+		Group::addChild(_depthPeeling.get());
 	}
 
 	_mode = mode;

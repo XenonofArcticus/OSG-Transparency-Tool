@@ -57,7 +57,7 @@ EBCNode* EBCReader::readEBCFile(const std::string& ebc, osg::PrimitiveSet::Mode 
 
 	std::fclose(fp);
 
-	EBCNode* ebcNode = new EBCNode(_vertices, elements, mode);
+	EBCNode* ebcNode = new EBCNode(_vertices.get(), elements, mode);
 
 	std::ostringstream geometryName;
 
