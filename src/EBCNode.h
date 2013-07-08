@@ -6,7 +6,11 @@ namespace osgtt {
 
 class EBCNode: public osg::Geode {
 public:
-	EBCNode(osg::Vec3Array* vertices, osg::DrawElementsUInt* elements, osg::PrimitiveSet::Mode mode);
+	EBCNode(
+		osg::Vec3Array*        vertices,
+		osg::Vec3Array*        normals,
+		osg::DrawElementsUInt* elements
+	);
 
 	void setRGB(const osg::Vec3& rgb);
 	void setAlpha(osg::Vec4::value_type alpha);

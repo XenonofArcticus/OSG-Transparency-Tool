@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 	
 	// Iterate over all the EBC files and add them to our group.
 	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
-		osgtt::EBCNode* node = reader.readEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
+		osgtt::EBCNode* node = reader.readEBCFile(*i);
 
 		node->setAlpha(0.5);
 		node->setRGB(osg::Vec3(0.3, 0.6, 0.8));

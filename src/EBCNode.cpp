@@ -4,37 +4,21 @@
 
 namespace osgtt {
 
-EBCNode::EBCNode(osg::Vec3Array* vertices, osg::DrawElementsUInt* elements, osg::PrimitiveSet::Mode mode) {
+EBCNode::EBCNode(
+	osg::Vec3Array*        vertices,
+	osg::Vec3Array*        normals,
+	osg::DrawElementsUInt* elements
+) {
 	osg::Geometry*  geometry = new osg::Geometry();
 	osg::Vec4Array* colors   = new osg::Vec4Array();
 
 	colors->push_back(osg::Vec4(0.0, 0.0, 0.0, 0.5));
 
 	geometry->setVertexArray(vertices);
+	geometry->setNormalArray(normals);
 	geometry->setColorArray(colors);
 	geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
 	geometry->addPrimitiveSet(elements);
-
-	unsigned int numElems = 0;
-
-	if(mode == osg::PrimitiveSet::TRIANGLES) numElems = 3;
-
-	osg::Vec3Array* normals = new osg::Vec3Array();
-	
-	for(unsigned int i = 0; i < elements->size() / numElems; i++) {
-		osg::Vec3f pos[3];
-
-		for(unsigned int j = 0; j < 3; j++) pos[j] = (*vertices)[(*elements)[(numElems * i) + j]];
-	
-		osg::Vec3 normal = (pos[1] - pos[0]) ^ (pos[2] - pos[0]);
-
-		normal.normalize();
-
-		normals->push_back(normal);
-	}
-
-	geometry->setNormalArray(normals);
-	geometry->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE);
 	geometry->dirtyBound();
 
 	addDrawable(geometry);

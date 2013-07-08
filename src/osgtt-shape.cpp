@@ -58,24 +58,33 @@ protected:
 	osg::ref_ptr<osgtt::TransparencyGroup> _group;
 };
 
+const osg::Vec4 COLORS[8] = {
+	osg::Vec4(1.0, 1.0, 1.0, 1.0),
+	osg::Vec4(1.0, 0.0, 0.0, 0.9), 
+	osg::Vec4(0.0, 1.0, 0.0, 0.8),
+	osg::Vec4(0.0, 0.0, 1.0, 0.7),
+	osg::Vec4(1.0, 1.0, 0.0, 0.6),
+	osg::Vec4(0.0, 1.0, 1.0, 0.5),
+	osg::Vec4(1.0, 0.0, 1.0, 0.4),
+	osg::Vec4(0.0, 0.0, 0.0, 0.3),
+};
+
 int main(int argc, char** argv) {
 	osgtt::TransparencyGroup* group  = new osgtt::TransparencyGroup();
 	osg::Geode*               geode  = new osg::Geode();
-	osg::ShapeDrawable*       sphere = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(), 0.3));
-	osg::ShapeDrawable*       box    = new osg::ShapeDrawable(new osg::Box());
-	osg::ShapeDrawable*       cone   = new osg::ShapeDrawable(new osg::Cone());
 
-	sphere->setColor(osg::Vec4(1.0, 0.0, 0.0, 1.0));
-	box->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
-	cone->setColor(osg::Vec4(0.0, 0.0, 1.0, 0.5));
+	// Add 10 spheres inside one another, like little Matryoshka dolls!
+	for(unsigned int i = 0; i < 8; i++) {
+		osg::ShapeDrawable* sphere = new osg::ShapeDrawable(new osg::Box(osg::Vec3(), (i + 1) * 2.0));
 
-	geode->addDrawable(sphere);
-	geode->addDrawable(box);
-	geode->addDrawable(cone);
+		sphere->setColor(COLORS[i]);
+
+		geode->addDrawable(sphere);
+	}
 
 	osgtt::DepthPeeling* dp = new osgtt::DepthPeeling(512, 512);
 
-	dp->setNumPasses(4);
+	dp->setNumPasses(8);
 
 	group->addChild(geode);
 	group->setDepthPeeling(dp);
@@ -86,7 +95,7 @@ int main(int argc, char** argv) {
 	viewer.addEventHandler(new EventHandler(group));
 	viewer.setSceneData(group);
 	viewer.setUpViewInWindow(50, 50, 512, 512);
-	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+	// viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 
 	return viewer.run();
 }
