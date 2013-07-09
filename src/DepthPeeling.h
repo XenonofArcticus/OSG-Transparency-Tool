@@ -63,8 +63,7 @@ public:
 	DepthPeeling(unsigned int width = 0, unsigned int height = 0);
 
 	// This method should be called anytime the parent Viewport or window is
-	// resized. It will, if necessary, reallocate the internal texture stack and
-	// call dirty().
+	// resized. It will, if necessary, reallocate the internal texture stack.
 	void resize(int width, int height);
 
 	// This is the "beef" of the DepthPeeling object. It will create the entire
@@ -74,6 +73,14 @@ public:
 	// Conviently, most methods do this for you automatically, so its likely you'll
 	// never have to worry about it.
 	void dirty();
+
+	osg::Node* getScene() {
+		return _scene.get();
+	}
+
+	const osg::Node* getScene() const {
+		return _scene.get();
+	}
 
 	// This is the scene/subgraph which your render-to-texture cameras are pointed at.
 	void setScene(osg::Node* scene) {
@@ -85,8 +92,6 @@ public:
 	// final image.
 	void setNumPasses(unsigned int numPasses) {
 		_numPasses = numPasses;
-		
-		dirty();
 	}
 
 	unsigned int getNumPasses() const {
@@ -99,8 +104,6 @@ public:
 	// which is the (arguably silly) default.
 	void setTexUnit(unsigned int texUnit) {
 		_texUnit = texUnit;
-
-		dirty();
 	}
 
 	// This is the depth offset used by the CullCallback during the projective
@@ -108,8 +111,6 @@ public:
 	// this alone.
 	void setOffsetValue(unsigned int offsetValue) {
 		_offsetValue = offsetValue;
-
-		dirty();
 	}
 
 	unsigned int getOffsetValue() const {

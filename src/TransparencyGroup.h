@@ -3,6 +3,7 @@
 #include "DepthPeeling.h"
 
 #include <osg/Group>
+#include <osg/BlendFunc>
 
 namespace osgtt {
 
@@ -25,7 +26,9 @@ public:
 		// This is the the more accurate method in which an arbitrary number of
 		// depth "peels" are applied using projective texturing and RTT. The more
 		// passes you use, the more accurate (and slow) you scene will be.
-		DEPTH_PEELING
+		DEPTH_PEELING,
+		// Default is no method set.
+		NO_TRANSPARENCY
 	};
 
 	TransparencyGroup();
@@ -39,23 +42,28 @@ public:
 	virtual bool replaceChild(osg::Node* origChild, osg::Node* newChild);
 	virtual bool setChild(unsigned int i, osg::Node* child);
 
+	TransparencyMode getTransparencyMode() const {
+		return _mode;
+	}
+
 	void setTransparencyMode(TransparencyMode mode);
+
+	DepthPeeling* getDepthPeeling() {
+		return _depthPeeling.get();
+	}	
 
 	// Sets the DepthPeeling object that will manage the subgraph when DEPTH_PEELING mode
 	// is in effect. The DepthPeeling object itself maintains its own configuration options.
 	void setDepthPeeling(DepthPeeling* depthPeeling);
-
-	DepthPeeling* getDepthPeeling() {
-		return _depthPeeling;
-	}
 
 protected:
 	// TODO: Is it possible to use this API instead of overridding every osg::Group method?
 	// virtual void childRemoved(unsigned int pos, unsigned int numChildrenToRemove);
 	// virtual void childInserted(unsigned int pos);
 
-	TransparencyMode           _mode;
-	osg::ref_ptr<DepthPeeling> _depthPeeling;
+	TransparencyMode             _mode;
+	osg::ref_ptr<DepthPeeling>   _depthPeeling;
+	osg::ref_ptr<osg::BlendFunc> _blendFunc;
 
 private:
 	// Can't touch this! :)

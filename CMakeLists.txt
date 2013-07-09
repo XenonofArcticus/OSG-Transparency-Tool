@@ -55,11 +55,9 @@ TARGET_LINK_LIBRARIES(osgtt
 
 ADD_EXECUTABLE(osgtt-demo src/osgtt-demo.cpp)
 ADD_EXECUTABLE(osgtt-shape src/osgtt-shape.cpp)
-ADD_EXECUTABLE(osgtt-switch src/osgtt-switch.cpp)
 
 TARGET_LINK_LIBRARIES(osgtt-demo osgtt)
 TARGET_LINK_LIBRARIES(osgtt-shape osgtt)
-TARGET_LINK_LIBRARIES(osgtt-switch osgtt)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/demo)
 

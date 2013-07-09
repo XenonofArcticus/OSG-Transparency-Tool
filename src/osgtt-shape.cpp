@@ -32,8 +32,11 @@ public:
 		}
 
 		if(gea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
-			int key = gea.getKey();
+			int  key   = gea.getKey();
+			bool dirty = true;
 
+			// Handle all the key presses; if an action DOESN'T need to update
+			// the internal DepthPeeling peel stack, be sure and set dirty to false.
 			if(key == 'q') dp->setNumPasses(dp->getNumPasses() + 1);
 
 			else if(key == 'w') dp->setNumPasses(dp->getNumPasses() - 1);
@@ -42,11 +45,17 @@ public:
 
 			else if(key == 's') dp->setOffsetValue(dp->getOffsetValue() - 1);
 			
-			else if(key == 'z') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_SORTED_BIN);
+			else if(key == 'z') {
+				_group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_SORTED_BIN);
+
+				dirty = false;
+			}
 			
 			else if(key == 'x') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 
 			else return false;
+
+			if(dirty) dp->dirty();
 
 			return true;
 		}
@@ -58,23 +67,21 @@ protected:
 	osg::ref_ptr<osgtt::TransparencyGroup> _group;
 };
 
-const osg::Vec4 COLORS[8] = {
-	osg::Vec4(1.0, 1.0, 1.0, 1.0),
-	osg::Vec4(1.0, 0.0, 0.0, 0.9), 
-	osg::Vec4(0.0, 1.0, 0.0, 0.8),
-	osg::Vec4(0.0, 0.0, 1.0, 0.7),
-	osg::Vec4(1.0, 1.0, 0.0, 0.6),
-	osg::Vec4(0.0, 1.0, 1.0, 0.5),
-	osg::Vec4(1.0, 0.0, 1.0, 0.4),
-	osg::Vec4(0.0, 0.0, 0.0, 0.3),
+const osg::Vec4 COLORS[6] = {
+	osg::Vec4(0.0, 0.0, 0.0, 0.5),
+	osg::Vec4(1.0, 0.0, 0.0, 0.5), 
+	osg::Vec4(0.0, 1.0, 0.0, 0.5),
+	osg::Vec4(0.0, 0.0, 1.0, 0.25),
+	osg::Vec4(1.0, 1.0, 0.0, 0.25),
+	osg::Vec4(1.0, 1.0, 1.0, 0.25)
 };
 
 int main(int argc, char** argv) {
 	osgtt::TransparencyGroup* group  = new osgtt::TransparencyGroup();
 	osg::Geode*               geode  = new osg::Geode();
 
-	// Add 10 spheres inside one another, like little Matryoshka dolls!
-	for(unsigned int i = 0; i < 8; i++) {
+	// Add 6 spheres inside one another, like little Matryoshka dolls!
+	for(unsigned int i = 0; i < 6; i++) {
 		osg::ShapeDrawable* sphere = new osg::ShapeDrawable(new osg::Box(osg::Vec3(), (i + 1) * 2.0));
 
 		sphere->setColor(COLORS[i]);
@@ -84,7 +91,7 @@ int main(int argc, char** argv) {
 
 	osgtt::DepthPeeling* dp = new osgtt::DepthPeeling(512, 512);
 
-	dp->setNumPasses(8);
+	dp->setNumPasses(6);
 
 	group->addChild(geode);
 	group->setDepthPeeling(dp);
@@ -95,7 +102,10 @@ int main(int argc, char** argv) {
 	viewer.addEventHandler(new EventHandler(group));
 	viewer.setSceneData(group);
 	viewer.setUpViewInWindow(50, 50, 512, 512);
-	// viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+
+	// TODO: Why is this necessary to avoid near/far computation problems when toggling between the
+	// two different TransparencyModes?
+	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 
 	return viewer.run();
 }

@@ -125,7 +125,10 @@ _texUnit     (0),
 _texWidth    (width),
 _texHeight   (height),
 _offsetValue (8) {
-	dirty();
+	setDataVariance(osg::Object::DYNAMIC);
+
+	// TODO: Should this be called?
+	// dirty();
 }
 
 void DepthPeeling::resize(int width, int height) {
@@ -141,15 +144,13 @@ void DepthPeeling::resize(int width, int height) {
 
 	OSG_WARN << width << " " << height << std::endl;
 
-	_setTextureSize(_depthTextures[0], width, height);
-	_setTextureSize(_depthTextures[1], width, height);
+	_setTextureSize(_depthTextures[0].get(), width, height);
+	_setTextureSize(_depthTextures[1].get(), width, height);
 
-	for(unsigned int i = 0; i < _colorTextures.size(); i++) _setTextureSize(_colorTextures[i], width, height);
+	for(unsigned int i = 0; i < _colorTextures.size(); i++) _setTextureSize(_colorTextures[i].get(), width, height);
 
 	_texWidth  = width;
 	_texHeight = height;
-
-	dirty();
 }
 
 void DepthPeeling::dirty() {
@@ -224,8 +225,8 @@ void DepthPeeling::dirty() {
 		camera->setClearColor(osg::Vec4f(0.0, 0.0, 0.0, 0.0));
 		camera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 
-		osg::Texture* depthTexture     = _depthTextures[i % 2];
-		osg::Texture* prevDepthTexture = _depthTextures[(i + 1) % 2];
+		osg::Texture* depthTexture     = _depthTextures[i % 2].get();
+		osg::Texture* prevDepthTexture = _depthTextures[(i + 1) % 2].get();
 
 		if(_depthMode == DEPTH_STANDARD) camera->attach(osg::Camera::DEPTH_BUFFER, depthTexture);
 
@@ -248,7 +249,7 @@ void DepthPeeling::dirty() {
 
 		camera->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 
-		if(!i) camera->addChild(_scene);
+		if(!i) camera->addChild(_scene.get());
 
 		else {
 			osg::StateSet* stateSet = camera->getOrCreateStateSet();
@@ -273,7 +274,7 @@ void DepthPeeling::dirty() {
 			camera->addChild(texGenNode);
 			camera->addCullCallback(new CullCallback(_texUnit, _texWidth, _texHeight, _offsetValue, _textureMode));
 
-			texGenNode->addChild(_scene);
+			texGenNode->addChild(_scene.get());
 		}
 
 		addChild(camera);

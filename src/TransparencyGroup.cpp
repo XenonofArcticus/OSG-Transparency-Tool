@@ -4,11 +4,11 @@
 
 namespace osgtt {
 
-TransparencyGroup::TransparencyGroup() {
+TransparencyGroup::TransparencyGroup():
+_mode(NO_TRANSPARENCY) {
 	_scene        = new osg::Group();
 	_depthPeeling = new DepthPeeling();
-
-	setTransparencyMode(DEPTH_SORTED_BIN);
+	_blendFunc    = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 TransparencyGroup::TransparencyGroup(const TransparencyGroup& tg, const osg::CopyOp& co):
@@ -39,28 +39,35 @@ bool TransparencyGroup::setChild(unsigned int i, osg::Node* child) {
 }
 
 void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
+	if(_mode == mode) return;
+
 	// NOTE: As we setup the TransparencyMode settings, _mode will still contain the
 	// PREVIOUS TransparencyMode, while the mode argument will contain the desired mode.
 
 	// First, remove all of the previous children, whatever they are.
-	// _children.clear();
-	Group::removeChildren(0, 1);
+	Group::removeChildren(0, getNumChildren());
+
+	osg::StateSet* ss = getOrCreateStateSet();
 
 	// In this mode, we'll just add our proxied scene object and use OSG's default
 	// transparency/alpha/blending/whatever.
 	if(mode == DEPTH_SORTED_BIN) {
-		getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-		getOrCreateStateSet()->setAttributeAndModes(
-			new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA),
-			osg::StateAttribute::ON
-		);
+		ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
-		Group::addChild(_scene);
+		Group::addChild(_scene.get());
 	}
 
-	else if(mode == DEPTH_PEELING) {
-		_depthPeeling->setScene(_scene);
-		_depthPeeling->dirty();
+	else {
+		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
+	}
+
+	if(mode == DEPTH_PEELING) {
+		if(_scene.get() != _depthPeeling->getScene()) {
+			_depthPeeling->setScene(_scene.get());
+			_depthPeeling->dirty();
+		}
 
 		Group::addChild(_depthPeeling);
 	}
