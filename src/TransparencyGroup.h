@@ -27,6 +27,8 @@ public:
 		// depth "peels" are applied using projective texturing and RTT. The more
 		// passes you use, the more accurate (and slow) you scene will be.
 		DEPTH_PEELING,
+		// TODO: This!
+		DELAYED_BLEND,
 		// Default is no method set.
 		NO_TRANSPARENCY
 	};

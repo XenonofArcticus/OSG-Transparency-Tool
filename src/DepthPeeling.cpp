@@ -10,6 +10,7 @@
 #include <osg/TexGenNode>
 #include <osgUtil/CullVisitor>
 
+#include <osg/io_utils>
 #include <sstream>
 
 namespace osgtt {
@@ -86,6 +87,21 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 	const osg::Viewport*  viewport    = renderStage->getViewport();
 
 	osg::Matrixd m(*cullVisitor->getProjectionMatrix());
+
+	{
+		double fovy, ar, near, far;
+
+		osg::Camera* cam = cullVisitor->getCurrentCamera();
+
+		m.getPerspective(fovy, ar, near, far);
+
+		// m = osg::Matrixd::perspective(fovy, ar, 1, 10000);
+		// m.getPerspective(fovy, ar, near, far);
+
+		OSG_WARN << cam->getName() << std::endl;
+		// OSG_WARN << "\t" << fovy << ", " << ar << ", " << near << ", " << far << std::endl;
+		OSG_WARN << m << std::endl;
+	}
 
 	m.postMultTranslate(osg::Vec3d(1.0, 1.0, 1.0));
 	m.postMultScale(osg::Vec3d(0.5, 0.5, 0.5));

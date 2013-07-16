@@ -68,12 +68,19 @@ protected:
 };
 
 const osg::Vec4 COLORS[6] = {
-	osg::Vec4(0.0, 0.0, 0.0, 0.5),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25),
+	osg::Vec4(1.0, 0.0, 0.0, 0.25)
+
+	/*osg::Vec4(0.0, 0.0, 0.0, 0.5),
 	osg::Vec4(1.0, 0.0, 0.0, 0.5), 
 	osg::Vec4(0.0, 1.0, 0.0, 0.5),
 	osg::Vec4(0.0, 0.0, 1.0, 0.25),
 	osg::Vec4(1.0, 1.0, 0.0, 0.25),
-	osg::Vec4(1.0, 1.0, 1.0, 0.25)
+	osg::Vec4(1.0, 1.0, 1.0, 0.25)*/
 };
 
 int main(int argc, char** argv) {
@@ -105,7 +112,7 @@ int main(int argc, char** argv) {
 
 	// TODO: Why is this necessary to avoid near/far computation problems when toggling between the
 	// two different TransparencyModes?
-	viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+	// viewer.getCamera()->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
 
 	return viewer.run();
 }

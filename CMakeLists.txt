@@ -5,10 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 IF(NOT WIN32)
 	SET(CMAKE_C_FLAGS "-W -Wall -Wno-unused -fPIC")
 	SET(CMAKE_CXX_FLAGS "-W -Wall -Wno-unused -fPIC")
-ELSE(NOT WIN32)
-	SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add a postfix, usually d on windows")
-ENDIF(NOT WIN32)
+ENDIF()
 
+SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add a postfix, usually d on windows")
 SET(OPENSCENEGRAPH_INCLUDE_DIR "" CACHE PATH "Location of the OSG include headers.")
 SET(OPENSCENEGRAPH_LIB_DIR "" CACHE PATH "Location of the the OSG library objects.")
 
