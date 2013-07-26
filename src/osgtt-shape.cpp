@@ -53,6 +53,8 @@ public:
 			
 			else if(key == 'x') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 
+			else if(key == 'c') _group->setTransparencyMode(osgtt::TransparencyGroup::DELAYED_BLEND);
+
 			else return false;
 
 			if(dirty) dp->dirty();
@@ -105,6 +107,9 @@ int main(int argc, char** argv) {
 	group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 
 	osgViewer::Viewer viewer;
+
+	// eliminate callback-related crash on exit
+	viewer.setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 
 	viewer.addEventHandler(new EventHandler(group));
 	viewer.setSceneData(group);
