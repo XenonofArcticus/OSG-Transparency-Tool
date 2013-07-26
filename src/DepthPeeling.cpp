@@ -98,9 +98,9 @@ void DepthPeeling::CullCallback::operator()(osg::Node* node, osg::NodeVisitor* n
 		// m = osg::Matrixd::perspective(fovy, ar, 1, 10000);
 		// m.getPerspective(fovy, ar, near, far);
 
-		OSG_WARN << cam->getName() << std::endl;
-		// OSG_WARN << "\t" << fovy << ", " << ar << ", " << near << ", " << far << std::endl;
-		OSG_WARN << m << std::endl;
+		//OSG_WARN << cam->getName() << std::endl;
+		//OSG_WARN << "\t" << fovy << ", " << ar << ", " << near << ", " << far << std::endl;
+		//OSG_WARN << m << std::endl;
 	}
 
 	m.postMultTranslate(osg::Vec3d(1.0, 1.0, 1.0));
