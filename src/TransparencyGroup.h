@@ -27,7 +27,9 @@ public:
 		// depth "peels" are applied using projective texturing and RTT. The more
 		// passes you use, the more accurate (and slow) you scene will be.
 		DEPTH_PEELING,
-		// TODO: This!
+		// This mode is not depth sorted. "Transparent objects are rendered using
+		// multiplicative alpha blending, in a second rendering pass with depth buffer
+		// updates disabled." - http://doc.coin3d.org/Coin/classSoGLRenderAction.html
 		DELAYED_BLEND,
 		// Default is no method set.
 		NO_TRANSPARENCY

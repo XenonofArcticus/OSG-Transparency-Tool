@@ -1,6 +1,7 @@
 #include "TransparencyGroup.h"
 
 #include <osg/BlendFunc>
+#include <osg/Depth>
 
 namespace osgtt {
 
@@ -46,6 +47,7 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 	// First, remove all of the previous children, whatever they are.
 	Group::removeChildren(0, getNumChildren());
+	Node::dirtyBound(); // just in case
 
 	osg::StateSet* ss = getOrCreateStateSet();
 
@@ -57,7 +59,16 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		Group::addChild(_scene.get());
 	}
+	// In this mode, we render transparent objects last, but without depth sorting or writing
+	else if(mode == DELAYED_BLEND) {
+		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+		depth->setWriteMask( false );
+		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		ss->setRenderBinDetails( 12, "RenderBin");
+		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
+		Group::addChild(_scene.get());
+	}
 	else {
 		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
 		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
