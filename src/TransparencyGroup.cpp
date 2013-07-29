@@ -54,6 +54,10 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 	// In this mode, we'll just add our proxied scene object and use OSG's default
 	// transparency/alpha/blending/whatever.
 	if(mode == DEPTH_SORTED_BIN) {
+		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+		depth->setWriteMask( true );
+		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+
 		ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
@@ -61,15 +65,22 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 	}
 	// In this mode, we render transparent objects last, but without depth sorting or writing
 	else if(mode == DELAYED_BLEND) {
+
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( false );
 		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+
+		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
 		ss->setRenderBinDetails( 12, "RenderBin");
 		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
 		Group::addChild(_scene.get());
 	}
 	else {
+		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+		depth->setWriteMask( true );
+		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+
 		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
 		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
 	}
