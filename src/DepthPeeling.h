@@ -92,6 +92,8 @@ public:
 	// final image.
 	void setNumPasses(unsigned int numPasses) {
 		_numPasses = numPasses;
+        // I added
+        dirty();
 	}
 
 	unsigned int getNumPasses() const {

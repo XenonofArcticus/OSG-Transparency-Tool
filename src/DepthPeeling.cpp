@@ -167,6 +167,8 @@ void DepthPeeling::resize(int width, int height) {
 
 	_texWidth  = width;
 	_texHeight = height;
+    // I added
+    dirty();
 }
 
 void DepthPeeling::dirty() {

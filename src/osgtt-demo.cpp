@@ -46,7 +46,10 @@ public:
 		if(gea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
 			int key = gea.getKey();
 
-			if(key == 'q') dp->setNumPasses(dp->getNumPasses() + 1);
+			if(key == 'q') {
+                dp->setNumPasses(dp->getNumPasses() + 1);
+                printf("number of passes: %d\n",dp->getNumPasses());
+            }
 
 			else if(key == 'w') dp->setNumPasses(dp->getNumPasses() - 1);
 
@@ -107,12 +110,21 @@ int main(int argc, char** argv) {
 
 	osgtt::TransparencyGroup* group = new osgtt::TransparencyGroup();
 	
+    int id;
 	// Iterate over all the EBC files and add them to our group.
 	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
-		osgtt::EBCNode* node = reader.readEBCFile(*i);
-
+		osgtt::EBCNode* node = reader.readEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
+        id = rand();
+        printf("id  = %d\n",id);
+        if (id%2 == 1){
 		node->setAlpha(0.5);
-		node->setRGB(osg::Vec3(0.3, 0.6, 0.8));
+        }
+        else{
+            node->setAlpha(1);
+        }
+		//node->setAlpha(0.5);
+        node->setRGB(osg::Vec3(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX)));
+		//node->setRGB(osg::Vec3(0.3, 0.6, 0.8));
 
 		group->addChild(node);
 	}
