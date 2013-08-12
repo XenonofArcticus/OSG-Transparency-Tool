@@ -7,9 +7,11 @@ namespace osgtt {
 
 TransparencyGroup::TransparencyGroup():
 _mode(NO_TRANSPARENCY) {
-	_scene        = new osg::Group();
-	_depthPeeling = new DepthPeeling();
-	_blendFunc    = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_scene            = new osg::Group();
+	_depthPeeling     = new DepthPeeling();
+	_blendFunc        = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_transparentState = new osg::StateSet();
+	_opaqueState      = new osg::StateSet();
 }
 
 TransparencyGroup::TransparencyGroup(const TransparencyGroup& tg, const osg::CopyOp& co):
@@ -19,7 +21,9 @@ _depthPeeling (tg._depthPeeling),
 _scene        (tg._scene) {
 }
 
-bool TransparencyGroup::addChild(osg::Node* child) {
+bool TransparencyGroup::addChild(osg::Node* child, bool transparent) {
+	if(transparent) child->setStateSet(_transparentState);
+	else child->setStateSet(_opaqueState);
 	return _scene->addChild(child);
 }
 
@@ -49,17 +53,17 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 	Group::removeChildren(0, getNumChildren());
 	Node::dirtyBound(); // just in case
 
-	osg::StateSet* ss = getOrCreateStateSet();
+	setStateSet(_transparentState);
 
 	// In this mode, we'll just add our proxied scene object and use OSG's default
 	// transparency/alpha/blending/whatever.
 	if(mode == DEPTH_SORTED_BIN) {
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( true );
-		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
 
-		ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
+		_transparentState->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
 		Group::addChild(_scene.get());
 	}
@@ -68,21 +72,21 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( false );
-		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
 
-		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-		ss->setRenderBinDetails( 12, "RenderBin");
-		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
+		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		_transparentState->setRenderBinDetails( 12, "RenderBin");
+		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
 		Group::addChild(_scene.get());
 	}
 	else {
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( true );
-		ss->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
 
-		ss->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-		ss->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
+		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
 	}
 
 	if(mode == DEPTH_PEELING) {

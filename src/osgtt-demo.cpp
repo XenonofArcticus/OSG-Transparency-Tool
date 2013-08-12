@@ -114,19 +114,19 @@ int main(int argc, char** argv) {
 	// Iterate over all the EBC files and add them to our group.
 	for(EBCFiles::iterator i = ebcFiles.begin(); i != ebcFiles.end(); i++) {
 		osgtt::EBCNode* node = reader.readEBCFile(*i, osg::PrimitiveSet::TRIANGLES);
-        id = rand();
-        printf("id  = %d\n",id);
+		
+		node->setRGB(osg::Vec3(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX)));
+        
+		id = rand();
         if (id%2 == 1){
-		node->setAlpha(0.5);
+            node->setAlpha(0.5);
+			group->addChild(node, true); // true = render as transparent
         }
         else{
             node->setAlpha(1);
+			group->addChild(node, false); // false == hint that it's not transparent
         }
-		//node->setAlpha(0.5);
-        node->setRGB(osg::Vec3(double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX),double(rand())/double(RAND_MAX)));
-		//node->setRGB(osg::Vec3(0.3, 0.6, 0.8));
 
-		group->addChild(node);
 	}
 
 	// Set a two-sided FFP LightModel.
