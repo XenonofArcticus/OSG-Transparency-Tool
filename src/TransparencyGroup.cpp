@@ -53,8 +53,6 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 	Group::removeChildren(0, getNumChildren());
 	Node::dirtyBound(); // just in case
 
-	setStateSet(_transparentState);
-
 	// In this mode, we'll just add our proxied scene object and use OSG's default
 	// transparency/alpha/blending/whatever.
 	if(mode == DEPTH_SORTED_BIN) {
