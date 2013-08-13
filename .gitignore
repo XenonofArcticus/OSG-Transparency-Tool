@@ -6,12 +6,22 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+*.lib
 
+# Other compiler files
+*.bak
+*.ilk
+*.pdb
+*.idb
+*.exe
+
+*.bak
 tmp
 
 demo/osgtt-demo
