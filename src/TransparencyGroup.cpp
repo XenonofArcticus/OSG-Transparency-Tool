@@ -4,7 +4,7 @@
 #include <osg/Depth>
 
 namespace osgtt {
-
+	
 TransparencyGroup::TransparencyGroup():
 _mode(NO_TRANSPARENCY) {
 	_scene            = new osg::Group();
@@ -12,6 +12,9 @@ _mode(NO_TRANSPARENCY) {
 	_blendFunc        = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_transparentState = new osg::StateSet();
 	_opaqueState      = new osg::StateSet();
+
+	_transparentState->setMode( GL_CULL_FACE, osg::StateAttribute::OFF ); // need to see (lit) back faces in transparency
+	_opaqueState->setMode( GL_CULL_FACE, osg::StateAttribute::ON ); // opaque back faces should cull
 }
 
 TransparencyGroup::TransparencyGroup(const TransparencyGroup& tg, const osg::CopyOp& co):
@@ -78,16 +81,13 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		Group::addChild(_scene.get());
 	}
-	else {
+	else if(mode == DEPTH_PEELING) {
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( true );
 		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
 
 		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
-	}
 
-	if(mode == DEPTH_PEELING) {
 		if(_scene.get() != _depthPeeling->getScene()) {
 			_depthPeeling->setScene(_scene.get());
 			_depthPeeling->dirty();
@@ -95,6 +95,16 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		Group::addChild(_depthPeeling);
 	}
+	else { // NO_TRANSPARENCY
+		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+		depth->setWriteMask( true );
+		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+
+		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
+		Group::addChild(_scene.get());
+	}
+
 
 	_mode = mode;
 }
