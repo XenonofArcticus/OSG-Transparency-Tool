@@ -63,6 +63,8 @@ public:
 
 			else if(key == 'c') _group->setTransparencyMode(osgtt::TransparencyGroup::DELAYED_BLEND);
 
+			else if(key == 'v') _group->setTransparencyMode(osgtt::TransparencyGroup::NO_TRANSPARENCY);
+
 			else return false;
 
 			return true;
@@ -77,6 +79,8 @@ protected:
 
 int main(int argc, char** argv) {
 	osg::ArgumentParser args(&argc, argv);
+
+	srand(4321);
 
 	args.getApplicationUsage()->setCommandLineUsage(args.getApplicationName() + " <CRD> <EBC Files...>");
 
@@ -124,7 +128,7 @@ int main(int argc, char** argv) {
         }
         else{
             node->setAlpha(1);
-			group->addChild(node, false); // false == hint that it's not transparent
+			group->addChild(node, false); // false = hint that it's not transparent
         }
 
 	}

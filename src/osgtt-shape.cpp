@@ -53,6 +53,8 @@ public:
 			
 			else if(key == 'x') _group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 
+			else if(key == 'v') _group->setTransparencyMode(osgtt::TransparencyGroup::NO_TRANSPARENCY);
+
 			else if(key == 'c') {
 				_group->setTransparencyMode(osgtt::TransparencyGroup::DELAYED_BLEND);
 
