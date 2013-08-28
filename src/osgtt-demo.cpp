@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     // Create a Reader object and a Viewer; begin constructing our scene.
     osgtt::EBCReader reader;
     ptr = std::fgets(buff,1024, fp);
-    std::string crd;
+    char crd[1024];
     sscanf(buff, "%s", &crd);
     
     EBCFiles ebcFiles;
