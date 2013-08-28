@@ -1,0 +1,89 @@
+case3\blower_asm.crd
+case3/blower_asm.Volume_95.tet4.outer_box_1.tri3.ebc
+0
+0.5
+0.280526 0.743095 0.612934
+case3/blower_asm.Volume_95.tet4.outer_box_2.tri3.ebc  #face on top of the blower
+0                                                     #double sided
+1                                                     #opaque(transparency level)
+0.163976 0.416608 0.918238                            #r g b color
+case3/blower_asm.Volume_95.tet4.outer_box_3.tri3.ebc
+0  
+0.5
+0.643818 0.975921 0.683187
+case3/blower_asm.Volume_95.tet4.outer_box_4.tri3.ebc
+0 
+0.5
+0.665853 0.674795 0.210303
+case3/blower_asm.Volume_95.tet4.outer_box_5.tri3.ebc
+0
+0.5
+0.028535 0.913968 0.409925  
+case3/blower_asm.Volume_95.tet4.outer_box_6.tri3.ebc
+0 
+0.5
+0.471114 0.666677 0.798456
+case3/blower_asm.Volume_331.tet4.inner_box_1_Side0.tri3.ebc  #peach-colored inner face that attaches to two other opaque(transparency level) faces
+0                                                            #double sided
+1                                                            #opaque(transparency level)
+0.962340 0.562883 0.501938 
+case3/blower_asm.Volume_331.tet4.inner_box_2_Side0.tri3.ebc
+0
+0.5
+0.780694 0.612903 0.389630  
+case3/blower_asm.Volume_331.tet4.inner_box_3_Side0.tri3.ebc
+0 
+0.5
+0.764092 0.322611 0.205695 
+case3/blower_asm.Volume_331.tet4.inner_box_4_Side0.tri3.ebc
+0 
+0.5
+0.091342 0.033326 0.658467  
+case3/blower_asm.Volume_331.tet4.inner_box_5_Side0.tri3.ebc   #small blue inner face
+0                                                             #double sided
+1                                                             #opaque(transparency level)
+0.061617 0.245521 0.798608
+case3/blower_asm.Volume_331.tet4.inner_box_6_Side0.tri3.ebc   #small green inner face 
+0                                                             #double sided
+1                                                             #opaque(transparency level)
+0.002716 0.518723 0.054262
+case3/blower_asm.Volume_496.tet4.Impeller_Side0.tri3.ebc      #impeller inside blower
+0                                                             #double sided
+1                                                             #opaque(transparency level)
+0.198675 0.477523 0.804834
+case3/blower_asm.Volume_500.tet4.blower_main_1_Side0.tri3.ebc
+0
+0.5
+0.063997 0.540513 0.389141
+case3/blower_asm.Volume_500.tet4.blower_main_2_Side0.tri3.ebc
+0
+0.5
+0.903500 0.872433 0.622852
+case3/blower_asm.Volume_500.tet4.blower_main_3_Side0.tri3.ebc 
+0                                                             
+0.5                                                             
+0.269112 0.680685 0.296701
+case3/blower_asm.Volume_500.tet4.blower_main_4_Side0.tri3.ebc 
+0                                                             
+0.5                                                      
+0.049257 0.752800 0.489242
+case3/blower_asm.Volume_500.tet4.blower_main_5_Side0.tri3.ebc #blue tube attaches to the main body of blower
+0                                                             #double sided
+1                                                             #opaque(transparency level)
+0.044679 0.248756 0.821711
+case3/blower_asm.Volume_500.tet4.blower_main_6_Side0.tri3.ebc
+0 
+0.5
+0.955382 0.917753 0.995514
+case3/blower_asm.Volume_500.tet4.blower_main_7_Side0.tri3.ebc #light yellow circle at the bottom of blower
+0                                                             #double sided
+1                                                             #opaque(transparency level)
+0.858119 0.828089 0.544237
+case3/blower_asm.Volume_500.tet4.blower_main_8_Side0.tri3.ebc
+0 
+0.5
+0.031465 0.546464 0.525254
+case3/blower_asm.Volume_500.tet4.Impeller_Side0.tri3.ebc
+0
+0.5
+0.028993 0.472518 0.580309

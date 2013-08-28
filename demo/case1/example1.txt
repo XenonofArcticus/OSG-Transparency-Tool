@@ -1,0 +1,25 @@
+case1/mixer.crd    #crd file
+case1/blades.ebc   #green blades inside the tube
+0                  #double sided
+1                  #opaque( transparency level)
+0.333 0.589 0.431  # r g b color
+case1/inlet.ebc    #pink circle at one end of the tube
+0                  #double sided
+1                  #opaque( transparency level)
+0.683 0.164 0.417
+case1/jinlet.ebc   #small green circle 
+0                  #double sided
+1                  #opaque( transparency level)
+0.029 0.914 0.409
+case1/jtube.ebc    #purple branch tube
+0                  #double sided
+1                  #opaque( transparency level)
+0.675 0.210 0.644
+case1/outlet.ebc   #violet circle at one end of the tube
+0                  #double sided
+0.5                #transparent( transparency level)
+0.502 0.471 0.667
+case1/tube.ebc     #orange main tube
+0                  #double sided
+1                  #opaque( transparency level)
+0.764 0.323 0.206
