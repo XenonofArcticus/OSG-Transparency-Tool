@@ -49,9 +49,9 @@ EBCNode* EBCReader::readEBCFile(const std::string& ebc, osg::PrimitiveSet::Mode 
 
 		sscanf(buff, "%d %d %d", &e0, &e1, &e2);
 
-		elements->push_back(e0);
-		elements->push_back(e1);
 		elements->push_back(e2);
+		elements->push_back(e1);
+		elements->push_back(e0);
 	}
 	}
 
