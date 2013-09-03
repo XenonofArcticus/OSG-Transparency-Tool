@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
 
 	dp->setNumPasses(6);
 
-	group->addChild(geode);
+	group->addChild(geode, true, true);
 	group->setDepthPeeling(dp);
 	group->setTransparencyMode(osgtt::TransparencyGroup::DEPTH_PEELING);
 

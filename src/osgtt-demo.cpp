@@ -157,10 +157,10 @@ int main(int argc, char** argv) {
         printf("color %f %f %f %f\n",color.x(),color.y(),color.z(), color.w());
         
         if(color.w()<1){
-            group->addChild(node, true); // true = render as transparent
+            group->addChild(node, true, (flag == 1 ? true : false)); // true = render as transparent, flag=1:render as two-sided
         }
         else{
-            group->addChild(node, false); // false = hint that it's not transparent
+            group->addChild(node, false, (flag == 1 ? true : false)); // false = hint that it's not transparent, flag=1:render as two-sided
         }
         node->setColor(color);
         id++;

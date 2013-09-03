@@ -11,10 +11,14 @@ _mode(NO_TRANSPARENCY) {
 	_depthPeeling     = new DepthPeeling();
 	_blendFunc        = new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	_transparentState = new osg::StateSet();
+	_transparentStateDoubleSided = new osg::StateSet();
 	_opaqueState      = new osg::StateSet();
+	_opaqueStateDoubleSided      = new osg::StateSet();
 
-	_transparentState->setMode( GL_CULL_FACE, osg::StateAttribute::OFF ); // need to see (lit) back faces in transparency
+	_transparentState->setMode( GL_CULL_FACE, osg::StateAttribute::ON ); // single-sided transparent faces should cull
+	_transparentStateDoubleSided->setMode( GL_CULL_FACE, osg::StateAttribute::OFF ); // need to see (lit) back faces in transparency
 	_opaqueState->setMode( GL_CULL_FACE, osg::StateAttribute::ON ); // opaque back faces should cull
+	_opaqueStateDoubleSided->setMode( GL_CULL_FACE, osg::StateAttribute::OFF ); // opaque doublesided should not cull
 }
 
 TransparencyGroup::TransparencyGroup(const TransparencyGroup& tg, const osg::CopyOp& co):
@@ -24,9 +28,24 @@ _depthPeeling (tg._depthPeeling),
 _scene        (tg._scene) {
 }
 
-bool TransparencyGroup::addChild(osg::Node* child, bool transparent) {
-	if(transparent) child->setStateSet(_transparentState);
-	else child->setStateSet(_opaqueState);
+bool TransparencyGroup::addChild(osg::Node* child, bool transparent, bool twoSided) {
+	if(transparent) {
+		if(twoSided) {
+			child->setStateSet(_transparentStateDoubleSided);
+		}
+		else {
+			child->setStateSet(_transparentState);
+		}
+
+	}
+	else {
+		if(twoSided) {
+			child->setStateSet(_opaqueStateDoubleSided);
+		}
+		else {
+			child->setStateSet(_opaqueState);
+		}
+	}
 	return _scene->addChild(child);
 }
 

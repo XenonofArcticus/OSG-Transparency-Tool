@@ -40,7 +40,7 @@ public:
 
 	META_Node(osgtt, TransparencyGroup);
 
-	virtual bool addChild(osg::Node* child, bool transparent = true);
+	virtual bool addChild(osg::Node* child, bool transparent, bool twoSided);
 	virtual bool insertChild(unsigned int index, osg::Node* child);
 	virtual bool removeChildren(unsigned int pos, unsigned int numChildrenToRemove);
 	virtual bool replaceChild(osg::Node* origChild, osg::Node* newChild);
@@ -72,7 +72,7 @@ protected:
 private:
 	// Can't touch this! :)
 	osg::ref_ptr<osg::Group> _scene;
-	osg::ref_ptr<osg::StateSet> _transparentState, _opaqueState;
+	osg::ref_ptr<osg::StateSet> _transparentState, _transparentStateDoubleSided, _opaqueState, _opaqueStateDoubleSided;
 };
 
 }
