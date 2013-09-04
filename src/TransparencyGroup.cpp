@@ -81,10 +81,15 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 		osg::ref_ptr<osg::Depth> depth = new osg::Depth;
 		depth->setWriteMask( true );
 		_transparentState->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
-
 		_transparentState->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
+        /*----------------------------added by yiting-------------------------------------------*/
+		_transparentStateDoubleSided->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentStateDoubleSided->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+		_transparentStateDoubleSided->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
+        /*---------------------------------------------------------------------------------------*/
+        
 		Group::addChild(_scene.get());
 	}
 	// In this mode, we render transparent objects last, but without depth sorting or writing
@@ -98,6 +103,14 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 		_transparentState->setRenderBinDetails( 12, "RenderBin");
 		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
 
+        /*----------------------------added by yiting-------------------------------------------*/
+		_transparentStateDoubleSided->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+        
+		_transparentStateDoubleSided->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		_transparentStateDoubleSided->setRenderBinDetails( 12, "RenderBin");
+		_transparentStateDoubleSided->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::ON);
+        /*---------------------------------------------------------------------------------------*/
+        
 		Group::addChild(_scene.get());
 	}
 	else if(mode == DEPTH_PEELING) {
@@ -107,6 +120,11 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
 
+        /*----------------------------added by yiting-------------------------------------------*/
+		_transparentStateDoubleSided->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentStateDoubleSided->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+        /*---------------------------------------------------------------------------------------*/
+        
 		if(_scene.get() != _depthPeeling->getScene()) {
 			_depthPeeling->setScene(_scene.get());
 			_depthPeeling->dirty();
@@ -121,6 +139,13 @@ void TransparencyGroup::setTransparencyMode(TransparencyMode mode) {
 
 		_transparentState->setRenderingHint(osg::StateSet::DEFAULT_BIN);
 		_transparentState->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
+        
+        /*----------------------------added by yiting-------------------------------------------*/
+		_transparentStateDoubleSided->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
+		_transparentStateDoubleSided->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+		_transparentStateDoubleSided->setAttributeAndModes(_blendFunc.get(), osg::StateAttribute::OFF);
+        /*---------------------------------------------------------------------------------------*/
+        
 		Group::addChild(_scene.get());
 	}
 
