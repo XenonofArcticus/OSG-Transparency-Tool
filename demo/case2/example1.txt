@@ -3,10 +3,6 @@ case2/inner_box.ebc        # outer side of inner box
 1                          # single-sided
 0.5                        # transparency level
 0.333110 0.589831 0.431806 # r g b values
-case2/inner_box_2.ebc      # inner side of inner box
-1                          # single-sided
-1                          # opaque(transparency level)
-0.683187 0.163976 0.416608 # r g b values
 case2/inner_pipe1.ebc      # inner side of inner_pipe1( the straight inner pipe)
 1                          # single-sided
 1                          # opaque(transparency level)

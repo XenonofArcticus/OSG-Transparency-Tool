@@ -1,0 +1,1 @@
+.\osgtt-demo.exe case2\example3.txt

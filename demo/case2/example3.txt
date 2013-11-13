@@ -1,11 +1,11 @@
 case2\strakes.crd
 case2/inner_box.ebc        # outer side of inner box
 1                          # single-sided
-1                          # transparency level
+0.5                        # transparency level
 0.333110 0.589831 0.431806 # r g b values
 case2/inner_pipe1.ebc      # inner side of inner_pipe1( the straight inner pipe)
 1                          # single-sided
-1                          # opaque
+0.5                        # transparency level
 0.674795 0.210303 0.643818
 case2/inner_pipe1A.ebc     # outer side of inner_pipe1
 1                          # single-sided
@@ -17,7 +17,7 @@ case2/inner_pipe2.ebc      # inner side of inner_pipe2 ( the inner pipe in the m
 0.501938 0.471114 0.666677
 case2/inner_pipe2A.ebc     # outer side of inner_pipe2
 1                          # single-sided
-1                          # opaque
+0.5                        # transparent
 0.612903 0.389630 0.962340
 case2/inner_pipe3.ebc      # inner side of inner_pipe3
 1                          # single side
@@ -41,7 +41,7 @@ case2/outer_pipe1A.ebc
 0.622852 0.063997 0.540513
 case2/outer_pipe2.ebc      # outer side of outer_pipe2(the outer pipe in the middle)
 1                          # single-sided
-1                          # opaque
+0.5                        # transparent
 0.680685 0.296701 0.903500
 case2/outer_pipe2A.ebc     # inner side of outer_pipe2(the outer pipe in the middle)
 1                          # single-sided
@@ -53,5 +53,5 @@ case2/outer_pipe3.ebc       # outer side of outer_pipe3(the straight outer pipe)
 0.995514 0.044679 0.248756
 case2/outer_pipe3A.ebc      # inner side of outer_pipe3
 1                           # single-sided
-1                           # opaque
+0.5                         # transparent
 0.828089 0.544237 0.955382
