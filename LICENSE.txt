@@ -1,3 +1,6 @@
+
+The text below corresponds to the "MIT" open source license http://opensource.org/licenses/MIT
+
 Copyright (c) 2013 AlphaPixel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
